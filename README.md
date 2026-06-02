@@ -5,6 +5,9 @@
 **MV3 anti-cheat extension for the Hesias LMS.**
 Locks the exam environment, detects cheating signals, and streams evidence to the audit backend.
 
+> [!WARNING]
+> **Unofficial project.** Not made by or affiliated with Hesias. Built by a student as an independent initiative.
+
 [![Manifest](https://img.shields.io/badge/manifest-v3-4285F4?logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
