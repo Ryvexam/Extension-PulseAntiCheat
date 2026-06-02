@@ -1,0 +1,880 @@
+[
+  {
+    "id": 2,
+    "priority": 100,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "|http://localhost:3000/api/",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "websocket"
+      ]
+    }
+  },
+  {
+    "id": 3,
+    "priority": 100,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "|http://127.0.0.1:3000/api/",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "websocket"
+      ]
+    }
+  },
+  {
+    "id": 4,
+    "priority": 100,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "|https://pulse.hesias.fr/api/",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "websocket"
+      ]
+    }
+  },
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "stylesheet",
+        "image",
+        "media",
+        "font",
+        "websocket",
+        "other",
+        "sub_frame"
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||chat.openai.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 21,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||chatgpt.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 22,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||openai.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 23,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||api.openai.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 24,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||claude.ai/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 25,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||anthropic.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 26,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||api.anthropic.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 27,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||gemini.google.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 28,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||generativelanguage.googleapis.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 29,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||copilot.microsoft.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 30,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||bing.com/chat*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 31,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||perplexity.ai/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 32,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||mistral.ai/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 33,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||api.mistral.ai/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 34,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||groq.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 35,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||api.groq.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 36,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||poe.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 37,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||you.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 38,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||phind.com/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 39,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||huggingface.co/chat*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 40,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||api-inference.huggingface.co/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 41,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "|https://*/chat*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 42,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "|https://*/v1/chat*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 43,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "|https://*/v1/completions*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 44,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "|https://*/v1/responses*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 45,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "|https://*/v1/embeddings*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 46,
+    "priority": 30,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "|https://*/v1/messages*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "sub_frame",
+        "websocket",
+        "other"
+      ]
+    }
+  },
+  {
+    "id": 100,
+    "priority": 3,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "||hesias.fr/*",
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "stylesheet",
+        "image",
+        "media",
+        "font",
+        "websocket",
+        "other",
+        "sub_frame"
+      ]
+    }
+  },
+  {
+    "id": 101,
+    "priority": 3,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "||hesias.net/*",
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "stylesheet",
+        "image",
+        "media",
+        "font",
+        "websocket",
+        "other",
+        "sub_frame"
+      ]
+    }
+  },
+  {
+    "id": 102,
+    "priority": 3,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "||ptichka.hesias.net/*",
+      "resourceTypes": [
+        "xmlhttprequest",
+        "script",
+        "stylesheet",
+        "image",
+        "media",
+        "font",
+        "websocket",
+        "other",
+        "sub_frame"
+      ]
+    }
+  },
+  {
+    "id": 103,
+    "priority": 3,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "||maxcdn.bootstrapcdn.com/*",
+      "resourceTypes": [
+        "stylesheet",
+        "font",
+        "script"
+      ]
+    }
+  },
+  {
+    "id": 104,
+    "priority": 3,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "||fonts.googleapis.com/*",
+      "resourceTypes": [
+        "stylesheet",
+        "font"
+      ]
+    }
+  },
+  {
+    "id": 105,
+    "priority": 3,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "||fonts.gstatic.com/*",
+      "resourceTypes": [
+        "font"
+      ]
+    }
+  },
+  {
+    "id": 106,
+    "priority": 3,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "||cdnjs.cloudflare.com/*",
+      "resourceTypes": [
+        "script"
+      ]
+    }
+  },
+  {
+    "id": 107,
+    "priority": 3,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "||code.jquery.com/*",
+      "resourceTypes": [
+        "stylesheet",
+        "script"
+      ]
+    }
+  },
+  {
+    "id": 108,
+    "priority": 20,
+    "action": {
+      "type": "allow"
+    },
+    "condition": {
+      "urlFilter": "||localhost:3000/api/*",
+      "resourceTypes": [
+        "xmlhttprequest"
+      ]
+    }
+  },
+  {
+    "id": 109,
+    "priority": 15,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||localhost/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "websocket",
+        "script",
+        "stylesheet"
+      ]
+    }
+  },
+  {
+    "id": 110,
+    "priority": 15,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||127.0.0.1/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "websocket",
+        "script",
+        "stylesheet"
+      ]
+    }
+  },
+  {
+    "id": 111,
+    "priority": 15,
+    "action": {
+      "type": "block"
+    },
+    "condition": {
+      "urlFilter": "||0.0.0.0/*",
+      "initiatorDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "xmlhttprequest",
+        "websocket",
+        "script",
+        "stylesheet"
+      ]
+    }
+  },
+  {
+    "id": 200,
+    "priority": 200,
+    "action": {
+      "type": "modifyHeaders",
+      "responseHeaders": [
+        {
+          "header": "permissions-policy",
+          "operation": "remove"
+        },
+        {
+          "header": "feature-policy",
+          "operation": "remove"
+        }
+      ]
+    },
+    "condition": {
+      "requestDomains": [
+        "hesias.fr",
+        "hesias.net"
+      ],
+      "resourceTypes": [
+        "main_frame",
+        "sub_frame"
+      ]
+    }
+  }
+]

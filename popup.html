@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulse Hesias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 280px;
+      background: #05080f;
+      color: #f0f4ff;
+      font-family: 'Syne', sans-serif;
+      border: 1px solid rgba(0, 150, 255, 0.12);
+    }
+
+    .header {
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(0, 150, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 28px;
+      height: 28px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon {
+      font-size: 18px;
+      color: #0096ff;
+      filter: drop-shadow(0 0 6px rgba(0, 150, 255, 0.5));
+    }
+
+    .header-text h1 {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .header-text p {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: rgba(160, 180, 220, 0.5);
+      letter-spacing: 0.03em;
+      margin-top: 1px;
+    }
+
+    .status-bar {
+      padding: 10px 18px;
+      background: rgba(0, 150, 255, 0.04);
+      border-bottom: 1px solid rgba(0, 150, 255, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00cc66;
+      box-shadow: 0 0 6px rgba(0, 200, 100, 0.6);
+      flex-shrink: 0;
+    }
+
+    .status-dot.inactive {
+      background: rgba(160, 180, 220, 0.3);
+      box-shadow: none;
+    }
+
+    .status-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: rgba(160, 180, 220, 0.7);
+      letter-spacing: 0.02em;
+    }
+
+    .section {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(0, 150, 255, 0.06);
+    }
+
+    .section-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: rgba(0, 150, 255, 0.6);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .info-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: rgba(160, 180, 220, 0.5);
+    }
+
+    .info-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: rgba(200, 220, 255, 0.85);
+    }
+
+    .info-value.ok { color: #00cc66; }
+    .info-value.warn { color: #ffaa00; }
+    .info-value.blocked { color: #ff5555; }
+
+    .domains {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .domain-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: rgba(0, 150, 255, 0.8);
+      background: rgba(0, 150, 255, 0.06);
+      border: 1px solid rgba(0, 150, 255, 0.12);
+      border-radius: 2px;
+      padding: 3px 8px;
+      display: inline-block;
+    }
+
+    .footer {
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .version {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: rgba(120, 140, 180, 0.3);
+    }
+
+    .infraction-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: rgba(160, 180, 220, 0.5);
+    }
+
+    #infraction-num {
+      color: #ff8080;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <span class="logo-icon">⬡</span>
+    </div>
+    <div class="header-text">
+      <h1>Pulse Hesias</h1>
+      <p>Environnement d'examen sécurisé</p>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="status-dot"></div>
+    <span class="status-text" id="status-text">Chargement...</span>
+  </div>
+
+  <div class="section">
+    <div class="section-title">État de la session</div>
+    <div class="info-row">
+      <span class="info-label">Mode plein écran</span>
+      <span class="info-value" id="fullscreen-status">—</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Réseau</span>
+      <span class="info-value ok">Filtré</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Surveillance</span>
+      <span class="info-value" id="watch-status">—</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Domaines autorisés</div>
+    <div class="domains">
+      <span class="domain-tag">*.hesias.fr</span>
+      <span class="domain-tag">*.hesias.net</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="version">v0.0.1</span>
+    <span class="infraction-count">Infractions : <span id="infraction-num">0</span></span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
