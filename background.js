@@ -352,6 +352,24 @@ async function infractionEtUpload(tabId, session, type, details = {}) {
   });
 }
 
+function estEvenementClavier(event) {
+  return event?.type === "keydown" || event?.type === "keyup";
+}
+
+function estEvenementCopierColler(event) {
+  if (["copy", "cut", "paste"].includes(event?.type)) return true;
+  if (!estEvenementClavier(event)) return false;
+  const key = event.key || {};
+  const modifier = key.ctrlKey || key.metaKey;
+  return modifier && ["KeyC", "KeyV", "KeyX"].includes(key.code);
+}
+
+function resumerEvenements(events) {
+  const counts = {};
+  for (const event of events) counts[event.type] = (counts[event.type] || 0) + 1;
+  return counts;
+}
+
 chrome.windows.onBoundsChanged?.addListener?.(async (win) => {
   const found = trouverSessionParWindowId(win.id);
   if (!found) return;
@@ -602,15 +620,47 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const session = SESSIONS.get(tabId) || PAGES_QCM.get(tabId);
         const events = Array.isArray(msg.data?.events) ? msg.data.events.slice(0, 50) : [];
         if (session && events.length > 0) {
+          const timestamp = Date.now();
           const payload = {
             type: "input_events",
             events,
             eventCount: events.length,
             ...session,
-            timestamp: Date.now()
+            timestamp
           };
           await sauvegarderInfraction("input_events", { events, eventCount: events.length });
           await uploadInfraction(payload);
+
+          const clipboardEvents = events.filter(estEvenementCopierColler);
+          const keyboardEvents = events.filter(event => estEvenementClavier(event) && !estEvenementCopierColler(event));
+          const examActif = SESSIONS.has(tabId);
+          const suspiciousInputs = [
+            {
+              type: "copier_coller_detecte",
+              events: clipboardEvents,
+              eventCount: clipboardEvents.length
+            },
+            {
+              type: "clavier_detecte",
+              events: keyboardEvents,
+              eventCount: keyboardEvents.length
+            }
+          ].filter(item => item.eventCount > 0);
+
+          for (const item of suspiciousInputs) {
+            const details = {
+              eventCount: item.eventCount,
+              eventTypes: resumerEvenements(item.events),
+              sample: item.events.slice(0, 8)
+            };
+            await sauvegarderInfraction(item.type, details);
+            await uploadInfraction({ type: item.type, ...details, ...session, timestamp });
+            if (examActif) {
+              enregistrerEvidenceAutourEvenement(tabId, session, item.type, timestamp).catch(err => {
+                console.warn(`[Pulse Hesias] Evidence ${item.type} non enregistrée:`, err.message);
+              });
+            }
+          }
         }
         sendResponse({ ok: true });
         break;
