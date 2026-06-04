@@ -24,6 +24,16 @@ const PAGES_QCM = new Map(); // tabId → { examId, studentId, detectedAt }
 const EVIDENCE_BUFFERS = new Map(); // tabId → [{ blob, timestamp }]
 const EVIDENCE_TIMERS = new Map(); // tabId → intervalId
 
+async function verifierExtensionOfficielleLocale() {
+  const identity = await getExtensionIdentity();
+  const official = identity?.extensionId === PULSE_EXTENSION_ID && identity?.extensionInstallType === "normal";
+  return {
+    ok: official,
+    reason: official ? null : "extension_non_officielle",
+    identity
+  };
+}
+
 function getOngletsSurveilles() {
   return new Map([...PAGES_QCM.entries(), ...SESSIONS.entries()]);
 }
@@ -73,7 +83,7 @@ async function envoyerHeartbeats(sessionActive = true) {
       if (!tab) continue;
       const tabs = await chrome.tabs.query({ windowId: tab.windowId });
       const windows = await chrome.windows.getAll({ populate: false });
-      await uploadHeartbeat({
+      const heartbeatResult = await uploadHeartbeat({
         ...session,
         timestamp: Date.now(),
         extensionActive: true,
@@ -83,6 +93,24 @@ async function envoyerHeartbeats(sessionActive = true) {
         windowCount: windows.length,
         currentUrl: tab.url || ""
       });
+      if (heartbeatResult && heartbeatResult.official === false) {
+        const extensionData = heartbeatResult.extension || null;
+        await sauvegarderInfraction("extension_non_officielle", {
+          reason: heartbeatResult.reason || "non_official_extension",
+          extensionId: extensionData?.extensionId || null,
+          extensionInstallType: extensionData?.extensionInstallType || null,
+          extensionVersion: extensionData?.extensionVersion || null
+        });
+        chrome.tabs.sendMessage(tabId, {
+          type: "UNOFFICIAL_EXTENSION",
+          reason: heartbeatResult.reason || "non_official_extension",
+          extension: extensionData
+        }).catch(() => {});
+        SESSIONS.delete(tabId);
+        PAGES_QCM.delete(tabId);
+        arreterBufferEvidence(tabId);
+        continue;
+      }
     } catch (err) {
       console.warn("[Pulse Hesias] Heartbeat:", err.message);
     }
@@ -554,6 +582,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const studentName = msg.data?.studentName || null;
         if (!examId || examId === "unknown" || !studentId || studentId === "unknown") {
           sendResponse({ ok: false, reason: "unknown_ids" });
+          break;
+        }
+        const extensionCheck = await verifierExtensionOfficielleLocale();
+        if (!extensionCheck.ok) {
+          sendResponse({ ok: false, reason: extensionCheck.reason, extension: extensionCheck.identity });
           break;
         }
         const examWindowId = sender.tab?.windowId || null;

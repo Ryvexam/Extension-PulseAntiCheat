@@ -312,6 +312,11 @@
         afficherOverlayVM(msg.score, msg.signaux || []);
         logInfraction("vm_detectee", { score: msg.score });
         break;
+      case "UNOFFICIAL_EXTENSION":
+        sessionConfirmee = false;
+        desarmerSurveillance();
+        afficherOverlayExtensionNonOfficielle(msg.extension || {}, msg.reason || "non_official_extension");
+        break;
     }
   });
 
@@ -368,8 +373,8 @@
   // Overlay démarrage — affiché sur la page QCM Pulse
   function afficherOverlayDemarrage(vmScore = 0) {
     if (overlayActif) return;
-    overlayType = "start";
     const overlay = creerOverlayBase("ph-overlay-start");
+    overlayType = "start";
     overlay.innerHTML = `
       <div class="ph-card">
         <div class="ph-logo">
@@ -423,6 +428,9 @@
         data: { examId, studentId, studentName, vmResultat }
       });
       if (!resp || !resp.ok) {
+        if (resp?.reason === "extension_non_officielle" || resp?.reason === "missing_extension_identity") {
+          afficherOverlayExtensionNonOfficielle(resp.extension || {}, resp.reason);
+        }
         console.warn("[Pulse Hesias] EXAM_START refusé");
         return;
       }
@@ -438,13 +446,13 @@
 
   // Overlay VM détectée
   function afficherOverlayVM(score, signaux) {
-    overlayType = "vm";
     const signauxSuspects = signaux.filter(s => s.suspect);
     const items = signauxSuspects.map(s =>
       `<li class="ph-ext-item">⚠️ ${s.nom} : <strong>${s.valeur}</strong></li>`
     ).join("");
 
     const overlay = creerOverlayBase("ph-overlay-vm");
+    overlayType = "vm";
     overlay.innerHTML = `
       <div class="ph-card ph-card-warning">
         <div class="ph-warning-icon">🖥️</div>
@@ -457,9 +465,36 @@
     `;
   }
 
+  function afficherOverlayExtensionNonOfficielle(extension = {}, reason = "non_official_extension") {
+    supprimerOverlay();
+    const installType = echapperHtml(extension.extensionInstallType || extension.installType || "unknown");
+    const extensionId = echapperHtml(extension.extensionId || extension.id || "unknown");
+    const version = echapperHtml(extension.extensionVersion || extension.version || "unknown");
+    const messages = {
+      non_official_extension: "Cette extension n'est pas l'installation officielle du Chrome Web Store.",
+      missing_extension_identity: "L'identité de l'extension n'a pas pu être vérifiée.",
+      default: "Cette extension n'est pas reconnue comme l'extension officielle.",
+    };
+    const description = messages[reason] || messages.default;
+    const overlay = creerOverlayBase("ph-overlay-unofficial");
+    overlayType = "unofficial";
+    overlay.innerHTML = `
+      <div class="ph-card ph-card-warning">
+        <div class="ph-warning-icon">🛑</div>
+        <h2 class="ph-title">Extension non officielle</h2>
+        <p class="ph-subtitle">${description}</p>
+        <ul class="ph-ext-list">
+          <li class="ph-ext-item">Install type : <strong>${installType}</strong></li>
+          <li class="ph-ext-item">Extension ID : <strong>${extensionId}</strong></li>
+          <li class="ph-ext-item">Version : <strong>${version}</strong></li>
+        </ul>
+        <p class="ph-disclaimer" style="margin-top:12px">Supprimez la copie locale et installez la version publiée sur le Chrome Web Store.</p>
+      </div>
+    `;
+  }
+
   function afficherOverlayViolation(raison = "fullscreen") {
-    if (overlayType === "extension" || overlayType === "multiscreen" || overlayType === "vm") return;
-    overlayType = "violation";
+    if (overlayType === "extension" || overlayType === "multiscreen" || overlayType === "vm" || overlayType === "unofficial") return;
     const messages = {
       fullscreen: { titre: "Mode plein écran quitté", desc: "Cliquez pour revenir en plein écran.<br>Cet événement a été enregistré." },
       faux_fullscreen: { titre: "Plein écran invalide", desc: "Simulation de plein écran détectée.<br>Fermez les DevTools et reprenez." },
@@ -468,6 +503,7 @@
     const msg = messages[raison] || messages.fullscreen;
     const sansBouton = raison === "devtools";
     const overlay = creerOverlayBase("ph-overlay-violation");
+    overlayType = "violation";
     overlay.innerHTML = `
       <div class="ph-card ph-card-warning">
         <div class="ph-warning-icon">⚠️</div>
@@ -482,7 +518,6 @@
   }
 
   function afficherOverlayExtension(extensions) {
-    overlayType = "extension";
     const liste = extensions
       .map(e => `
         <li class="ph-ext-item ph-ext-action-item">
@@ -495,6 +530,7 @@
       .join("");
     const total = extensions.length;
     const overlay = creerOverlayBase("ph-overlay-extension");
+    overlayType = "extension";
     overlay.innerHTML = `
       <div class="ph-card ph-card-warning">
         <div class="ph-warning-icon">🧩</div>
@@ -535,8 +571,8 @@
   }
 
   function afficherOverlayOnglets(total) {
-    overlayType = "onglets";
     const overlay = creerOverlayBase("ph-overlay-onglets");
+    overlayType = "onglets";
     overlay.innerHTML = `
       <div class="ph-card ph-card-warning">
         <div class="ph-warning-icon">📑</div>
@@ -560,8 +596,8 @@
   }
 
   function afficherOverlayMultiScreen(count) {
-    overlayType = "multiscreen";
     const overlay = creerOverlayBase("ph-overlay-multiscreen");
+    overlayType = "multiscreen";
     overlay.innerHTML = `
       <div class="ph-card ph-card-warning">
         <div class="ph-warning-icon">🖥️</div>

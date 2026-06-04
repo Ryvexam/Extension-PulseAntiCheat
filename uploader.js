@@ -78,6 +78,49 @@ function buildAuthHeaders(token) {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+let extensionIdentityPromise = null;
+async function getExtensionIdentity() {
+  if (!extensionIdentityPromise) {
+    extensionIdentityPromise = new Promise((resolve) => {
+      try {
+        chrome.management.getSelf((info) => {
+          if (chrome.runtime.lastError) {
+            resolve({
+              extensionId: chrome.runtime.id,
+              extensionInstallType: "unknown",
+              extensionVersion: chrome.runtime.getManifest().version
+            });
+            return;
+          }
+          resolve({
+            extensionId: info?.id || chrome.runtime.id,
+            extensionInstallType: String(info?.installType || "unknown").toLowerCase(),
+            extensionVersion: info?.version || chrome.runtime.getManifest().version
+          });
+        });
+      } catch {
+        resolve({
+          extensionId: chrome.runtime.id,
+          extensionInstallType: "unknown",
+          extensionVersion: chrome.runtime.getManifest().version
+        });
+      }
+    });
+  }
+  return extensionIdentityPromise;
+}
+
+async function withExtensionIdentity(payload = {}) {
+  const identity = await getExtensionIdentity();
+  return { ...payload, ...identity };
+}
+
+async function parseJsonResponse(response) {
+  const text = await response.text().catch(() => "");
+  if (!text) return null;
+  try { return JSON.parse(text); } catch { return { raw: text }; }
+}
+
 // ─── Upload screenshot ────────────────────────────────────────
 
 async function uploadScreenshot(record) {
@@ -103,6 +146,11 @@ async function uploadScreenshot(record) {
     if (record.tabTitle) formData.append("tabTitle", record.tabTitle);
     if (typeof record.tabActive === "boolean") formData.append("tabActive", String(record.tabActive));
     if (Number.isFinite(record.windowId)) formData.append("windowId", record.windowId);
+
+    const identity = await getExtensionIdentity();
+    formData.append("extensionId", identity.extensionId);
+    formData.append("extensionInstallType", identity.extensionInstallType);
+    formData.append("extensionVersion", identity.extensionVersion);
 
     const api = await getApiConfig();
     const response = await fetch(`${api.baseUrl}/api/exam/screenshots`, {
@@ -130,16 +178,29 @@ async function uploadScreenshot(record) {
 
 async function uploadInfraction(infraction) {
   ensureWs();
-  if (envoyerWs("infraction", infraction)) return;
+  const payload = await withExtensionIdentity(infraction);
+  if (envoyerWs("infraction", payload)) return { ok: true, transport: "ws" };
   try {
     const api = await getApiConfig();
-    await fetch(`${api.baseUrl}/api/exam/infractions`, {
+    const response = await fetch(`${api.baseUrl}/api/exam/infractions`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...buildAuthHeaders(api.token) },
-      body: JSON.stringify(infraction)
+      body: JSON.stringify(payload)
     });
+    if (!response.ok) {
+      const details = await parseJsonResponse(response);
+      return {
+        ok: false,
+        status: response.status,
+        official: response.status !== 403,
+        reason: details?.reason || details?.error || null,
+        extension: details?.extension || null
+      };
+    }
+    return { ok: true, transport: "http" };
   } catch (err) {
     console.warn("[Pulse Hesias] Infraction non envoyée:", err.message);
+    return { ok: false, error: err.message };
   }
 }
 
@@ -147,23 +208,36 @@ async function uploadInfraction(infraction) {
 
 async function uploadHeartbeat(heartbeat) {
   ensureWs();
-  const wsPayload = { ...heartbeat, lastScreenshotTimestamp: dernierUploadScreenshot, lastUploadStatus: dernierStatutUpload };
-  if (envoyerWs("heartbeat", wsPayload)) { dernierStatutUpload = "heartbeat_ws"; return; }
+  const payload = await withExtensionIdentity({
+    ...heartbeat,
+    lastScreenshotTimestamp: dernierUploadScreenshot,
+    lastUploadStatus: dernierStatutUpload
+  });
+  if (envoyerWs("heartbeat", payload)) { dernierStatutUpload = "heartbeat_ws"; return { ok: true, transport: "ws" }; }
   try {
     const api = await getApiConfig();
     const response = await fetch(`${api.baseUrl}/api/exam/heartbeat`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...buildAuthHeaders(api.token) },
-      body: JSON.stringify({
-        ...heartbeat,
-        lastScreenshotTimestamp: dernierUploadScreenshot,
-        lastUploadStatus: dernierStatutUpload
-      })
+      body: JSON.stringify(payload)
     });
-    dernierStatutUpload = response.ok ? "heartbeat_ok" : `heartbeat_http_${response.status}`;
+    if (!response.ok) {
+      dernierStatutUpload = `heartbeat_http_${response.status}`;
+      const details = await parseJsonResponse(response);
+      return {
+        ok: false,
+        status: response.status,
+        official: response.status !== 403,
+        reason: details?.reason || details?.error || null,
+        extension: details?.extension || null
+      };
+    }
+    dernierStatutUpload = "heartbeat_ok";
+    return { ok: true, transport: "http" };
   } catch (err) {
     dernierStatutUpload = "heartbeat_failed";
     console.warn("[Pulse Hesias] Heartbeat non envoyé:", err.message);
+    return { ok: false, error: err.message };
   }
 }
 
