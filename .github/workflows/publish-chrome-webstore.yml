@@ -106,6 +106,7 @@ jobs:
               scopes=["https://www.googleapis.com/auth/chromewebstore"],
           )
           credentials.refresh(Request())
+          print(f"::add-mask::{credentials.token}")
           print(f"access_token={credentials.token}")
           PY
 
