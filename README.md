@@ -93,6 +93,23 @@ See the [App-PulseAntiCheat](https://github.com/Ryvexam/App-PulseAntiCheat) back
 
 ---
 
+## Chrome Web Store publishing
+
+A GitHub Actions workflow is available at `.github/workflows/publish-chrome-webstore.yml`.
+
+Required GitHub settings:
+
+- Repository variable `PULSE_BACKEND_URL` set to `https://anticheat.ryvexam.fr`
+- Secret `CWS_SERVICE_ACCOUNT_JSON`
+- Secret `CWS_PUBLISHER_ID`
+- Secret `CWS_ITEM_ID`
+
+The workflow runs on pushes to `main` and manual dispatch. It prepares a clean package from the repository root and strips `update_url` before upload so the Chrome Web Store accepts the manifest.
+
+Privacy policy: [CONFIDENTIALITY.md](https://github.com/Ryvexam/Extension-PulseAntiCheat/blob/main/CONFIDENTIALITY.md)
+
+---
+
 ## Whitelisted domains
 
 Network filter rules pass through:
