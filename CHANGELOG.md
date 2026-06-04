@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.0.2] - 2026-06-04
+
+### Changed
+- Popup footer now displays the installed extension manifest version instead of a hardcoded placeholder.
+
 ## [1.0.1] - 2026-06-04
 
 ### Added

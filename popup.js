@@ -1,4 +1,11 @@
 // popup.js — Pulse Hesias
+function updateExtensionVersion() {
+  const versionEl = document.getElementById("extension-version");
+  if (!versionEl) return;
+  const version = chrome.runtime.getManifest().version;
+  versionEl.textContent = `v${version}`;
+}
+
 
 async function updateStatus() {
   try {
@@ -65,4 +72,5 @@ async function updateStatus() {
   }
 }
 
+updateExtensionVersion();
 updateStatus();
