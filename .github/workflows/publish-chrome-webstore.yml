@@ -94,7 +94,7 @@ jobs:
         env:
           CWS_SERVICE_ACCOUNT_JSON: ${{ secrets.CWS_SERVICE_ACCOUNT_JSON }}
         run: |
-          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          ACCESS_TOKEN="$(python3 - <<'PY'
           import json
           import os
 
@@ -106,9 +106,11 @@ jobs:
               scopes=["https://www.googleapis.com/auth/chromewebstore"],
           )
           credentials.refresh(Request())
-          print(f"::add-mask::{credentials.token}")
-          print(f"access_token={credentials.token}")
+          print(credentials.token)
           PY
+          )"
+          echo "::add-mask::${ACCESS_TOKEN}"
+          echo "access_token=${ACCESS_TOKEN}" >> "$GITHUB_OUTPUT"
 
       - name: Upload package to Chrome Web Store
         shell: bash
