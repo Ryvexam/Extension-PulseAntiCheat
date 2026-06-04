@@ -31,6 +31,14 @@ Treat the app backend, extension, CI, release packaging, and Chrome Web Store pu
 
 ## Release Workflow
 
+## Chrome Web Store Automation
+
+- The Chrome Web Store workflow auto-generates the upload package version from the manifest major/minor plus the Git commit count, so future pushes to main should produce a strictly increasing patch version as long as history is not rewritten.
+- The workflow removes `update_url` from the package manifest before uploading to Chrome Web Store; do not add `update_url` back to the store package.
+- If Chrome Web Store returns `FAILED_PRECONDITION` / `NOT_UPDATEABLE` with `You may not edit or publish an item that is in review`, do not diagnose IAM, secrets, or token generation first. The item is already in review and must be approved, rejected, or withdrawn before another upload can succeed.
+- If Chrome Web Store returns `PERMISSION_DENIED` for `publishers/.../items/...`, verify Chrome Web Store Developer Dashboard access for the service account and confirm `CWS_PUBLISHER_ID` and `CWS_ITEM_ID`; Google Cloud IAM alone is not enough.
+- The current workflow uses `CWS_SERVICE_ACCOUNT_JSON` to generate a Chrome Web Store scoped access token directly, then uploads and publishes through the Chrome Web Store API.
+
 - Use the repository root as the extension package source unless the workflow says otherwise.
 - The Chrome Web Store package must exclude repo-only files such as `.git/`, `.github/`, docs, and local artifacts.
 - Keep privacy-policy and publishing links in sync between the repo, README, and the Chrome Web Store listing.
