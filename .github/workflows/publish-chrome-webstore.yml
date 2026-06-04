@@ -84,23 +84,41 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Authenticate to Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.CWS_SERVICE_ACCOUNT_JSON }}
-          token_format: access_token
+      - name: Install Google auth library
+        shell: bash
+        run: python3 -m pip install --user google-auth requests
+
+      - name: Generate Chrome Web Store access token
+        id: google-token
+        shell: bash
+        env:
+          CWS_SERVICE_ACCOUNT_JSON: ${{ secrets.CWS_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          import os
+
+          from google.auth.transport.requests import Request
+          from google.oauth2 import service_account
+
+          credentials = service_account.Credentials.from_service_account_info(
+              json.loads(os.environ["CWS_SERVICE_ACCOUNT_JSON"]),
+              scopes=["https://www.googleapis.com/auth/chromewebstore"],
+          )
+          credentials.refresh(Request())
+          print(f"access_token={credentials.token}")
+          PY
 
       - name: Upload package to Chrome Web Store
         shell: bash
         env:
-          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          ACCESS_TOKEN: ${{ steps.google-token.outputs.access_token }}
         run: |
           curl --fail-with-body -sS -X POST -H "Authorization: Bearer ${ACCESS_TOKEN}" -T /tmp/chrome-webstore-package.zip "https://chromewebstore.googleapis.com/upload/v2/publishers/${CWS_PUBLISHER_ID}/items/${CWS_ITEM_ID}:upload"
 
       - name: Publish item
         shell: bash
         env:
-          ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          ACCESS_TOKEN: ${{ steps.google-token.outputs.access_token }}
         run: |
           curl --fail-with-body -sS -X POST -H "Authorization: Bearer ${ACCESS_TOKEN}" "https://chromewebstore.googleapis.com/v2/publishers/${CWS_PUBLISHER_ID}/items/${CWS_ITEM_ID}:publish"
